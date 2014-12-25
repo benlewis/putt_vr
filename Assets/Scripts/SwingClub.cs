@@ -19,7 +19,8 @@ public class SwingClub : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		PutBallToSleep();
+		//PutBallToSleep();
+		hitTime = 0.0f;
 	}
 	
 	// Update is called once per frame
