@@ -4,8 +4,9 @@ using System.Collections;
 public class SwingClub : MonoBehaviour {
 
 	public Rigidbody ball;
-	public Vector3 force;
-	public Camera camera;
+	public float force = 100.0f;
+	public Camera mainCamera;
+	public Transform hitDirection;
 	
 	public float sleepVelocity = 0.5f;
 	public float sleepAngularVelocity = 3.5f;
@@ -13,14 +14,14 @@ public class SwingClub : MonoBehaviour {
 	public float minSleepTime = 0.5f;
 	
 	private float hitTime;
-	private bool sleeping = true;
+	private bool sleeping = false;
 	
-	private Vector3 cameraPositionToBall = new Vector3(0.0f, 1.5f, -1.0f);
+	private Vector3 cameraPositionToBall = new Vector3(0.0f, 1.0f, -0.75f);
 
 	// Use this for initialization
 	void Start () {
-		//PutBallToSleep();
-		hitTime = 0.0f;
+		sleeping = false;
+		hitTime = Time.time;
 	}
 	
 	// Update is called once per frame
@@ -42,13 +43,22 @@ public class SwingClub : MonoBehaviour {
 		ball.rigidbody.Sleep();
 		sleeping = true;
 		ball.transform.renderer.material.color = Color.green;
-		camera.transform.position = ball.transform.position + cameraPositionToBall;
+		mainCamera.transform.position = ball.transform.position + cameraPositionToBall;
+		
+		hitDirection.transform.position = ball.transform.position;
+		hitDirection.gameObject.SetActive(true);
 	}
 	
 	public void HitBall() {
 		// Swing!
-		ball.AddForce(force);
+		Vector3 forward = hitDirection.forward;
+		forward.y = 0;
+		forward.Normalize();
+		hitDirection.gameObject.SetActive(false);
+		ball.AddForce(forward * force);
 		sleeping = false;
+		
+
 		ball.transform.renderer.material.color = Color.red;
 	}
 }
