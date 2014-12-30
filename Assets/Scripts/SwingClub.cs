@@ -3,10 +3,19 @@ using System.Collections;
 
 public class SwingClub : MonoBehaviour {
 
+	/* 
+	 *	All the transforms we need to handle swings
+	 *
+	*/
 	public Transform ball;
 	public Transform hole;
 	public Transform club;
 	public Transform golfer;
+	
+	/*
+	 * 	Determines how far back we swing
+	 *
+	*/
 	public float maxForce = 300.0f;
 				
 	/*
@@ -22,6 +31,7 @@ public class SwingClub : MonoBehaviour {
 	 * 	After the ball sleeps we need to move the golfer
 	*/
 	private Vector3 golferPositionToBall = Vector3.up * 0.8f;
+	private Vector3 cameraPositionToGolfer;
 	
 	/*
 	 * 	How long is the swing in motion
@@ -34,6 +44,7 @@ public class SwingClub : MonoBehaviour {
 	void Start () {
 		sleeping = false;
 		hitTime = Time.time;
+		cameraPositionToGolfer = Camera.main.transform.localPosition;
 	}
 	
 	// Update is called once per frame
@@ -60,6 +71,17 @@ public class SwingClub : MonoBehaviour {
 		
 		golfer.position = ball.position + golferPositionToBall;
 		club.localEulerAngles = Vector3.zero;
+		Camera.main.transform.localPosition = cameraPositionToGolfer;
+		
+		//find the vector pointing from the ball position to the hole
+		Vector3 ballToHoleDirection = (hole.position - ball.position).normalized;
+		
+		//create the rotation we need to be in to look at the hole
+		Quaternion bodyLookRotation = Quaternion.LookRotation(ballToHoleDirection);
+		
+		transform.rotation = bodyLookRotation;
+		transform.eulerAngles = Vector3.Scale (transform.eulerAngles, Vector3.up);
+		
 		force = 0.0f;
 		swingTime = 0.0f;
 	}

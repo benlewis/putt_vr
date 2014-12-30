@@ -13,11 +13,11 @@ public class RotateInputController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKey(KeyCode.LeftArrow)) {
-			transform.localEulerAngles -= Vector3.up * keyboardRotationAmount;
+			transform.localEulerAngles += Vector3.up * keyboardRotationAmount;
 		}
 		
 		if (Input.GetKey(KeyCode.RightArrow)) {
-			transform.localEulerAngles += Vector3.up * keyboardRotationAmount;
+			transform.localEulerAngles -= Vector3.up * keyboardRotationAmount;
 		}
 	}
 }
