@@ -6,6 +6,7 @@ public class SwingClub : MonoBehaviour {
 	public Transform ball;
 	public Transform hole;
 	public Transform club;
+	public Transform golfer;
 	public float maxForce = 300.0f;
 				
 	/*
@@ -45,7 +46,7 @@ public class SwingClub : MonoBehaviour {
 			PutBallToSleep();
 		}
 		
-		if (sleeping && Input.GetKey (KeyCode.Space)) {
+		if (sleeping && Input.GetButton ("Fire1")) {
 			SwingUp();
 		} else if (sleeping && swingTime > 0.0f) {
 			SwingDown();
@@ -57,7 +58,7 @@ public class SwingClub : MonoBehaviour {
 		sleeping = true;
 		ball.renderer.material.color = Color.green;
 		
-		transform.position = ball.position + golferPositionToBall;
+		golfer.position = ball.position + golferPositionToBall;
 		club.localEulerAngles = Vector3.zero;
 		force = 0.0f;
 		swingTime = 0.0f;
@@ -87,6 +88,6 @@ public class SwingClub : MonoBehaviour {
 		sleeping = false;
 		
 
-		ball.transform.renderer.material.color = Color.red;
+		ball.renderer.material.color = Color.red;
 	}
 }
