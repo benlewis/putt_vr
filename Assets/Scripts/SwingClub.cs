@@ -7,7 +7,7 @@ public class SwingClub : MonoBehaviour {
 	 *	All the transforms we need to handle swings
 	 *
 	*/
-	public Transform ball;
+	public Ball ball;
 	public Transform hole;
 	public Transform club;
 	public Transform golfer;
@@ -69,12 +69,20 @@ public class SwingClub : MonoBehaviour {
 		sleeping = true;
 		ball.renderer.material.color = Color.green;
 		
-		golfer.position = ball.position + golferPositionToBall;
+		if (ball.GetTouchingObject())
+			Debug.Log ("Ball is resting on " + ball.GetTouchingObject().name);
+		
+		if (hole.collider.bounds.Contains(ball.transform.position)) {
+			Debug.Log ("Ball is inside hole");
+		}
+		    
+		    
+		golfer.position = ball.transform.position + golferPositionToBall;
 		club.localEulerAngles = Vector3.zero;
 		Camera.main.transform.localPosition = cameraPositionToGolfer;
 		
 		//find the vector pointing from the ball position to the hole
-		Vector3 ballToHoleDirection = (hole.position - ball.position).normalized;
+		Vector3 ballToHoleDirection = (hole.position - ball.transform.position).normalized;
 		
 		//create the rotation we need to be in to look at the hole
 		Quaternion bodyLookRotation = Quaternion.LookRotation(ballToHoleDirection);
