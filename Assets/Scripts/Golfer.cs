@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SwingClub : MonoBehaviour {
+public class Golfer : MonoBehaviour {
 
 	/* 
 	 *	All the transforms we need to handle swings
@@ -10,14 +10,14 @@ public class SwingClub : MonoBehaviour {
 	public Ball ball;
 	public Transform hole;
 	public Transform club;
-	public Transform golfer;
+	public Transform body;
 	
 	/*
 	 * 	Determines how far back we swing
 	 *
 	*/
 	public float maxForce = 300.0f;
-				
+	
 	/*
 	 *	Figure out when the ball has stopped moving
 	*/			
@@ -38,20 +38,27 @@ public class SwingClub : MonoBehaviour {
 	*/
 	private float force = 0.0f;
 	private float swingTime = 0.0f;
-
+	
+	/*
+	 *	Interface with the Course Manager
+	 *
+	*/
+	private CourseManager manager;
+	
 	// Use this for initialization
 	void Start () {
 		sleeping = false;
 		hitTime = Time.time;
 		cameraPositionToGolfer = Camera.main.transform.localPosition;
+		manager = FindObjectOfType<CourseManager>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+		
 		if (!sleeping &&
-			Time.time - hitTime > minSleepTime &&
-			ball.rigidbody.velocity.magnitude < sleepVelocity && 
+		    Time.time - hitTime > minSleepTime &&
+		    ball.rigidbody.velocity.magnitude < sleepVelocity && 
 		    ball.rigidbody.angularVelocity.magnitude < sleepAngularVelocity) {
 			PutBallToSleep();
 		}
@@ -72,17 +79,17 @@ public class SwingClub : MonoBehaviour {
 			Debug.Log ("Ball is resting on " + ball.GetTouchingObject().name);
 		
 		if (hole.collider.bounds.Contains(ball.transform.position)) {
-			Debug.Log ("Ball is inside hole");
+			Debug.Log ("Ball is inside hole. On to next hole");
+			manager.PlayNextHole();
 		}
-		    
-		    
+			
 		SetForSwing();
 	}
 	
 	public void SetForSwing() {
 		
 		// Move the golfer back to the ball
-		golfer.position = ball.transform.position;
+		transform.position = ball.transform.position;
 		club.localEulerAngles = Vector3.zero;
 		Camera.main.transform.localPosition = cameraPositionToGolfer;
 		
@@ -92,8 +99,9 @@ public class SwingClub : MonoBehaviour {
 		//create the rotation we need to be in to look at the hole
 		Quaternion bodyLookRotation = Quaternion.LookRotation(ballToHoleDirection);
 		
-		transform.rotation = bodyLookRotation;
-		transform.eulerAngles = Vector3.Scale (transform.eulerAngles, Vector3.up);
+		// Rotate the body to face the hole
+		body.rotation = bodyLookRotation;
+		body.eulerAngles = Vector3.Scale (body.eulerAngles, Vector3.up);
 		
 		force = 0.0f;
 		swingTime = 0.0f;
@@ -108,21 +116,21 @@ public class SwingClub : MonoBehaviour {
 	}
 	
 	public void SwingDown() {
-		swingTime -= Time.deltaTime;
-		club.localEulerAngles -= Vector3.right * 1.0f;
+		swingTime -= Time.deltaTime * 2.0f;
+		club.localEulerAngles -= Vector3.right * 2.0f;
 		if (swingTime <= 0.0f)
 			HitBall();
 	}
 	
 	public void HitBall() {
 		// Swing!
-		Vector3 forward = transform.forward;
+		Vector3 forward = body.transform.forward;
 		forward.y = 0;
 		forward.Normalize();
 		ball.rigidbody.AddForce(forward * force);
 		sleeping = false;
 		
-
+		
 		ball.renderer.material.color = Color.red;
 	}
 }

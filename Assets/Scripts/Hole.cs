@@ -4,7 +4,7 @@ using System.Collections;
 public class Hole : MonoBehaviour {
 
 	public Transform startingSpot;
-	public Transform hole;
+	public Transform target;
 	public int par = 2;
 	
 	private int strokes = 0;
