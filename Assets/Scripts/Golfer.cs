@@ -11,6 +11,7 @@ public class Golfer : MonoBehaviour {
 	public Transform hole;
 	public Transform club;
 	public Transform body;
+	public Camera moveableCamera;
 	
 	/*
 	 * 	Determines how far back we swing
@@ -49,7 +50,8 @@ public class Golfer : MonoBehaviour {
 	void Start () {
 		sleeping = false;
 		hitTime = Time.time;
-		cameraPositionToGolfer = Camera.main.transform.localPosition;
+		if (moveableCamera)
+			cameraPositionToGolfer = moveableCamera.transform.localPosition;
 		manager = FindObjectOfType<CourseManager>();
 	}
 	
@@ -91,7 +93,9 @@ public class Golfer : MonoBehaviour {
 		// Move the golfer back to the ball
 		transform.position = ball.transform.position;
 		club.localEulerAngles = Vector3.zero;
-		Camera.main.transform.localPosition = cameraPositionToGolfer;
+		
+		if (moveableCamera)
+			moveableCamera.transform.localPosition = cameraPositionToGolfer;
 		
 		//find the vector pointing from the ball position to the hole
 		Vector3 ballToHoleDirection = (hole.position - ball.transform.position).normalized;

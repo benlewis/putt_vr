@@ -14,6 +14,10 @@ public class Hole : MonoBehaviour {
 		strokes = 0;
 	}
 	
+	public void AddStroke() {
+		strokes += 1;
+	}
+	
 	// Update is called once per frame
 	void Update () {
 	
