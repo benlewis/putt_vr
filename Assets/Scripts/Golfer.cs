@@ -44,7 +44,7 @@ public class Golfer : MonoBehaviour {
 	*/
 	private CourseManager manager;
 	private Ball ball;
-	private Transform hole;
+	private Transform holeTarget;
 	
 	// Use this for initialization
 	void Start () {
@@ -56,7 +56,7 @@ public class Golfer : MonoBehaviour {
 	}
 	
 	public void SetHole(Transform h, Ball b) {
-		hole = h;
+		holeTarget = h;
 		ball = b;
 	}
 	
@@ -85,7 +85,7 @@ public class Golfer : MonoBehaviour {
 		if (ball.GetTouchingObject())
 			Debug.Log ("Ball is resting on " + ball.GetTouchingObject().name);
 		
-		if (hole.collider.bounds.Contains(ball.transform.position)) {
+		if (holeTarget.collider.bounds.Contains(ball.transform.position)) {
 			Debug.Log ("Ball is inside hole. On to next hole");
 			manager.PlayNextHole();
 		}
@@ -103,7 +103,7 @@ public class Golfer : MonoBehaviour {
 			moveableCamera.transform.localPosition = cameraPositionToGolfer;
 		
 		//find the vector pointing from the ball position to the hole
-		Vector3 ballToHoleDirection = (hole.position - ball.transform.position).normalized;
+		Vector3 ballToHoleDirection = (holeTarget.position - ball.transform.position).normalized;
 		
 		//create the rotation we need to be in to look at the hole
 		Quaternion bodyLookRotation = Quaternion.LookRotation(ballToHoleDirection);

@@ -32,7 +32,7 @@ public class CourseManager : MonoBehaviour {
 		
 		Hole hole = holes[currentHole];
 		ball.transform.position = hole.startingSpot.position;
-		golfer.SetHole(hole.transform, ball);
+		golfer.SetHole(hole.target, ball);
 		ball.gameObject.SetActive(true);
 		//golfer.SetForSwing();
 		
