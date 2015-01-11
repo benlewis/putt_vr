@@ -7,8 +7,6 @@ public class Golfer : MonoBehaviour {
 	 *	All the transforms we need to handle swings
 	 *
 	*/
-	public Ball ball;
-	public Transform hole;
 	public Transform club;
 	public Transform body;
 	public Camera moveableCamera;
@@ -45,6 +43,8 @@ public class Golfer : MonoBehaviour {
 	 *
 	*/
 	private CourseManager manager;
+	private Ball ball;
+	private Transform hole;
 	
 	// Use this for initialization
 	void Start () {
@@ -53,6 +53,11 @@ public class Golfer : MonoBehaviour {
 		if (moveableCamera)
 			cameraPositionToGolfer = moveableCamera.transform.localPosition;
 		manager = FindObjectOfType<CourseManager>();
+	}
+	
+	public void SetHole(Transform h, Ball b) {
+		hole = h;
+		ball = b;
 	}
 	
 	// Update is called once per frame
