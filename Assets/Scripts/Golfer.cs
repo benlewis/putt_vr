@@ -63,6 +63,8 @@ public class Golfer : MonoBehaviour {
 		hole = h;
 		holeTarget = h.target;
 		ball = b;
+		sleeping = false;
+		hitTime = Time.time;
 	}
 	
 	// Update is called once per frame
@@ -102,6 +104,7 @@ public class Golfer : MonoBehaviour {
 		if (holeTarget.collider.bounds.Contains(ball.transform.position)) {
 			Debug.Log ("Ball is inside hole. On to next hole");
 			manager.PlayNextHole();
+			return;
 		}
 			
 		SetForSwing();
@@ -169,7 +172,7 @@ public class Golfer : MonoBehaviour {
 		hole.AddStroke ();
 		
 		ball.renderer.material.color = Color.red;
-
+		ball.Hit();
 
 	}
 }

@@ -55,12 +55,7 @@ public class Ball : MonoBehaviour {
 		
 		Debug.Log ("Ball collides with " + objectTouchingBall.name);
 	
-		AudioClip hitClip = null;
-		switch (objectTouchingBall.tag) {
-			case "Walls": hitClip = wallSound; break;
-			case "Sand": hitClip = sandSound; break;
-			case "Hole Walls": hitClip = holeWallSound; break;
-		}
+		PlayCollisionClip(collisionInfo.transform.tag);
 
 		if (objectTouchingBall.tag == "Out of Bounds") {
 			outOfBoundsTime = 3.0f;
@@ -68,6 +63,30 @@ public class Ball : MonoBehaviour {
 		}
 
 		// TODO: Play a sound if the collisionInfo object has a sound
+	}
+	
+	public void OnTriggerEnter(Collider collider) {
+		PlayCollisionClip(collider.transform.tag);
+	}
+	
+	private void PlayCollisionClip(string tag) {
+		AudioClip hitClip = null;
+		
+		switch (tag) {
+			case "Walls": hitClip = wallSound; break;
+			case "Sand": hitClip = sandSound; break;
+			case "Hole": hitClip = holeWallSound; break;
+		}
+		
+		if (hitClip) {
+			audio.PlayOneShot(hitClip);
+		}
+	}
+	
+	public void Hit() {
+		if (clubSound) {
+			audio.PlayOneShot(clubSound);
+		}
 	}
 	
 	void OnCollisionExit(Collision collisionInfo) {
