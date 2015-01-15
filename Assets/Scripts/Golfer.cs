@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using InControl;
 
 public class Golfer : MonoBehaviour {
 
@@ -30,13 +31,14 @@ public class Golfer : MonoBehaviour {
 	 * 	After the ball sleeps we need to move the camera back
 	*/
 	private Vector3 cameraPositionToGolfer;
-	
+
 	/*
 	 * 	How long is the swing in motion
 	 * 	And how much force will be applied to the ball when we hit it
 	*/
 	private float force = 0.0f;
 	private float swingTime = 0.0f;
+	private bool inDownSwing = false;
 	
 	/*
 	 *	Interface with the Course Manager
@@ -45,18 +47,21 @@ public class Golfer : MonoBehaviour {
 	private CourseManager manager;
 	private Ball ball;
 	private Transform holeTarget;
-	
+	private Hole hole;
+
 	// Use this for initialization
 	void Start () {
 		sleeping = false;
 		hitTime = Time.time;
-		if (moveableCamera)
+		if (moveableCamera) {
 			cameraPositionToGolfer = moveableCamera.transform.localPosition;
+		}
 		manager = FindObjectOfType<CourseManager>();
 	}
 	
-	public void SetHole(Transform h, Ball b) {
-		holeTarget = h;
+	public void SetHole(Hole h, Ball b) {
+		hole = h;
+		holeTarget = h.target;
 		ball = b;
 	}
 	
@@ -69,10 +74,19 @@ public class Golfer : MonoBehaviour {
 		    ball.rigidbody.angularVelocity.magnitude < sleepAngularVelocity) {
 			PutBallToSleep();
 		}
-		
-		if (sleeping && Input.GetButton ("Fire1")) {
+
+		// This is true when the ball is out of bounds or in a hazard
+		if (ball.ResetShot ()) {
+			hole.AddStroke(); // penalty stroke
+
+			PutBallToSleep();
+		}
+
+		InputDevice device = InputManager.ActiveDevice;
+
+		if (sleeping && !inDownSwing && device.Action1.IsPressed) {
 			SwingUp();
-		} else if (sleeping && swingTime > 0.0f) {
+		} else if (swingTime > 0.0f) {
 			SwingDown();
 		}
 	}
@@ -97,10 +111,9 @@ public class Golfer : MonoBehaviour {
 		
 		// Move the golfer back to the ball
 		transform.position = ball.transform.position;
+
+		// Reset the club to a standing up angle
 		club.localEulerAngles = Vector3.zero;
-		
-		if (moveableCamera)
-			moveableCamera.transform.localPosition = cameraPositionToGolfer;
 		
 		//find the vector pointing from the ball position to the hole
 		Vector3 ballToHoleDirection = (holeTarget.position - ball.transform.position).normalized;
@@ -108,25 +121,39 @@ public class Golfer : MonoBehaviour {
 		//create the rotation we need to be in to look at the hole
 		Quaternion bodyLookRotation = Quaternion.LookRotation(ballToHoleDirection);
 		
-		// Rotate the body to face the hole
-		body.rotation = bodyLookRotation;
-		body.eulerAngles = Vector3.Scale (body.eulerAngles, Vector3.up);
-		
+		// Rotate the golfer to face the hole
+		transform.rotation = bodyLookRotation;
+		transform.eulerAngles = Vector3.Scale (transform.eulerAngles, Vector3.up);
+
+		// If this is a screen camera, put it back in the Head position looking forward
+		if (moveableCamera) {
+			moveableCamera.transform.localPosition = cameraPositionToGolfer;
+		}
+
+		// Reset the body to be straight forward
+		body.localEulerAngles = Vector3.zero;
+
+		// Reset the ball
+		ball.StartShot ();
+
+		// We are no longer swinging
 		force = 0.0f;
 		swingTime = 0.0f;
+		inDownSwing = false;
 	}
 	
 	public void SwingUp() {
 		if (force < maxForce) {
 			swingTime += Time.deltaTime;
-			club.localEulerAngles += Vector3.right * 1.0f;
-			force += 5.0f;
+			club.localEulerAngles += Vector3.right * 0.5f;
+			force += 3.0f;
 		}
 	}
 	
 	public void SwingDown() {
-		swingTime -= Time.deltaTime * 2.0f;
-		club.localEulerAngles -= Vector3.right * 2.0f;
+		inDownSwing = true;
+		swingTime -= Time.deltaTime * 1.5f;
+		club.localEulerAngles -= Vector3.right * 0.8f;
 		if (swingTime <= 0.0f)
 			HitBall();
 	}
@@ -138,8 +165,11 @@ public class Golfer : MonoBehaviour {
 		forward.Normalize();
 		ball.rigidbody.AddForce(forward * force);
 		sleeping = false;
-		
+
+		hole.AddStroke ();
 		
 		ball.renderer.material.color = Color.red;
+
+
 	}
 }

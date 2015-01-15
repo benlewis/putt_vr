@@ -27,21 +27,18 @@ public class CourseManager : MonoBehaviour {
 		if (currentHole >= holes.Count) {
 			// Quit
 			Debug.Log ("Game over!");
-			return;
+			// return;
+			currentHole = 0; // restart the course
 		}
 		
 		Hole hole = holes[currentHole];
+		hole.StartHole ();
 		ball.transform.position = hole.startingSpot.position;
-		golfer.SetHole(hole.target, ball);
+		golfer.SetHole(hole, ball);
 		ball.gameObject.SetActive(true);
 		//golfer.SetForSwing();
 		
 		currentHole += 1;
-		
-		if (currentHole >= holes.Count) {
-			// Quit
-			Debug.Log ("Game over!");
-		}
 	}
 	
 	
