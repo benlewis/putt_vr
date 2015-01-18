@@ -17,7 +17,7 @@ public class Ball : MonoBehaviour {
 	private bool isOutOfBounds = false;
 	private bool resetShot = false;
 	private Vector3 shotPosition;
-
+	
 	// Use this for initialization
 	void Start () {
 
