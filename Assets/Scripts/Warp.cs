@@ -19,8 +19,9 @@ public class Warp : MonoBehaviour {
 		Debug.Log ("Enter warp " + collider.tag);
 		if (collider.CompareTag("Ball")) {
 			Debug.Log ("Moving ball from " + collider.transform.position + " to " + warpPartner.position);
-			//Ball ball = collider.GetComponent<Ball>();
-			collider.transform.position = warpPartner.position;
+			Ball ball = collider.GetComponent<Ball>();
+			ball.SetWarpPosition(warpPartner.position);
+			//collider.transform.position = warpPartner.position;
 		}
 	 } 
 }

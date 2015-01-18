@@ -17,10 +17,22 @@ public class Ball : MonoBehaviour {
 	private bool isOutOfBounds = false;
 	private bool resetShot = false;
 	private Vector3 shotPosition;
+	private Vector3? warpPosition = null;
 	
 	// Use this for initialization
 	void Start () {
 
+	}
+	
+	public void SetWarpPosition(Vector3 pos) {
+		warpPosition = pos;
+	}
+	
+	void FixedUpdate() {
+		if (warpPosition != null) {
+			transform.position = (Vector3) warpPosition;
+			warpPosition = null;
+		}
 	}
 	
 	// Update is called once per frame
@@ -37,6 +49,7 @@ public class Ball : MonoBehaviour {
 		resetShot = false;
 		isOutOfBounds = false;
 		shotPosition = transform.position;
+		warpPosition = null;
 	}
 
 	public bool ResetShot() {
@@ -59,7 +72,7 @@ public class Ball : MonoBehaviour {
 
 		if (!restingInBounds) {
 			// We have hit a surface but we are not in bounds
-			outOfBoundsTime = 3.0f;
+			outOfBoundsTime = maxOutOfBoundsSeconds;
 			isOutOfBounds = true;
 		}
 	}
