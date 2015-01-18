@@ -42,6 +42,15 @@ public class CourseManager : MonoBehaviour {
 		currentHole += 1;
 	}
 	
+	public readonly string[] holeNames = {"1","2","3","4","5","6","7","8","9"};
+	
+	public string GetScoreText() {
+		
+		string top_line = 		"   " + string.Join(" ", holeNames);
+		//string pars  = 		"Par holes.GetRange(0,9).ConvertAll(hole => hole.name).ToArray()
+		
+		return top_line;
+	}
 	
 	// Update is called once per frame
 	void Update () {
