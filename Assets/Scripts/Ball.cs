@@ -7,6 +7,7 @@ public class Ball : MonoBehaviour {
 	public AudioClip clubSound;
 	public AudioClip holeWallSound;
 	public AudioClip sandSound;
+	public AudioClip waterSound;
 
 
 	private bool restingInBounds = true;
@@ -65,6 +66,11 @@ public class Ball : MonoBehaviour {
 	
 	public void OnTriggerEnter(Collider collider) {
 		PlayCollisionClip(collider.transform.tag);
+		
+		if (collider.transform.tag == "Water") {
+			// Reset the shot immediately
+			resetShot = true;
+		}
 	}
 	
 	private void PlayCollisionClip(string tag) {
@@ -74,6 +80,7 @@ public class Ball : MonoBehaviour {
 			case "Walls": hitClip = wallSound; break;
 			case "Sand": hitClip = sandSound; break;
 			case "Hole": hitClip = holeWallSound; break;
+			case "Water": hitClip = waterSound; break;
 		}
 		
 		if (hitClip) {

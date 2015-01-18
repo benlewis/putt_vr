@@ -152,10 +152,17 @@ public class Golfer : MonoBehaviour {
 		}
 	}
 	
+	private float swingDownSeconds = 0.35f;
+	private float swingDownDegreesPerSecond;
 	public void SwingDown() {
-		inDownSwing = true;
-		swingTime -= Time.deltaTime * 2.0f;
-		club.localEulerAngles -= Vector3.right * 80.0f * Time.deltaTime;
+		if (inDownSwing == false) {
+			inDownSwing = true;
+			swingTime = swingDownSeconds;
+			// How fast do we swing down to get to 0 at the end?
+			swingDownDegreesPerSecond = club.localEulerAngles.x / swingDownSeconds;
+		}
+		swingTime -= Time.deltaTime;
+		club.localEulerAngles -= Vector3.right * swingDownDegreesPerSecond * Time.deltaTime;
 		if (swingTime <= 0.0f) {
 			if (force > 35.0f) 
 				HitBall();
