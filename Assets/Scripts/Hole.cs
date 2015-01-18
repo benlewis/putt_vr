@@ -23,6 +23,10 @@ public class Hole : MonoBehaviour {
 		strokes = 0;
 	}
 	
+	public int GetStrokes() {
+		return strokes;
+	}
+	
 	// Update is called once per frame
 	void Update () {
 		//scoreText.text = "Par: " + par + "\nStrokes: " + strokes;
