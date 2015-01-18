@@ -9,7 +9,7 @@ public class Ball : MonoBehaviour {
 	public AudioClip sandSound;
 
 
-	private Transform objectTouchingBall;
+	private bool restingInBounds = true;
 
 	private float maxOutOfBoundsSeconds = 3.0f;
 	private float outOfBoundsTime = 0.0f;
@@ -19,7 +19,7 @@ public class Ball : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+
 	}
 	
 	// Update is called once per frame
@@ -45,24 +45,22 @@ public class Ball : MonoBehaviour {
 		return resetShot;
 	}
 	
-	public Transform GetTouchingObject() {
-		return objectTouchingBall;
-	}
-	
 	// Keep track of what object our 
 	void OnCollisionEnter(Collision collisionInfo) {
-		objectTouchingBall = collisionInfo.transform;
+		Transform surface = collisionInfo.transform;
 		
-		Debug.Log ("Ball collides with " + objectTouchingBall.name);
-	
-		PlayCollisionClip(collisionInfo.transform.tag);
+		PlayCollisionClip(surface.tag);
+		
+		if (surface.CompareTag("Grass") ||
+			surface.CompareTag ("Sand")) {
+			restingInBounds = true;	
+		}
 
-		if (objectTouchingBall.tag == "Out of Bounds") {
+		if (!restingInBounds) {
+			// We have hit a surface but we are not in bounds
 			outOfBoundsTime = 3.0f;
 			isOutOfBounds = true;
 		}
-
-		// TODO: Play a sound if the collisionInfo object has a sound
 	}
 	
 	public void OnTriggerEnter(Collider collider) {
@@ -83,17 +81,19 @@ public class Ball : MonoBehaviour {
 		}
 	}
 	
-	public void Hit() {
+	public void Hit(float force, float max_force) {
 		if (clubSound) {
-			audio.PlayOneShot(clubSound);
+			audio.PlayOneShot(clubSound, force / max_force);
 		}
 	}
 	
 	void OnCollisionExit(Collision collisionInfo) {
-		if (objectTouchingBall) {
-			Debug.Log ("Ball is no longer touching " + objectTouchingBall.name);
-		}
+		Transform surface = collisionInfo.transform;
 		
-		//objectTouchingBall = null;
+		if (surface.CompareTag("Grass") ||
+		    surface.CompareTag ("Sand")) {
+		    //We have left the in bounds area
+			restingInBounds = false;	
+		}
 	}
 }

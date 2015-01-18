@@ -96,10 +96,6 @@ public class Golfer : MonoBehaviour {
 	public void PutBallToSleep() {
 		ball.rigidbody.Sleep();
 		sleeping = true;
-		ball.renderer.material.color = Color.green;
-		
-		if (ball.GetTouchingObject())
-			Debug.Log ("Ball is resting on " + ball.GetTouchingObject().name);
 		
 		if (holeTarget.collider.bounds.Contains(ball.transform.position)) {
 			Debug.Log ("Ball is inside hole. On to next hole");
@@ -138,7 +134,10 @@ public class Golfer : MonoBehaviour {
 
 		// Reset the ball
 		ball.StartShot ();
-
+		SwingReady();
+	}
+	
+	public void SwingReady() {
 		// We are no longer swinging
 		force = 0.0f;
 		swingTime = 0.0f;
@@ -148,17 +147,21 @@ public class Golfer : MonoBehaviour {
 	public void SwingUp() {
 		if (force < maxForce) {
 			swingTime += Time.deltaTime;
-			club.localEulerAngles += Vector3.right * 0.5f;
-			force += 3.0f;
+			club.localEulerAngles += Vector3.right * 40.0f * Time.deltaTime;
+			force += 200.0f * Time.deltaTime;
 		}
 	}
 	
 	public void SwingDown() {
 		inDownSwing = true;
-		swingTime -= Time.deltaTime * 1.5f;
-		club.localEulerAngles -= Vector3.right * 0.8f;
-		if (swingTime <= 0.0f)
-			HitBall();
+		swingTime -= Time.deltaTime * 2.0f;
+		club.localEulerAngles -= Vector3.right * 80.0f * Time.deltaTime;
+		if (swingTime <= 0.0f) {
+			if (force > 35.0f) 
+				HitBall();
+			else
+				SwingReady(); // Skip the stroke, it wasn't enough of a swing
+		}
 	}
 	
 	public void HitBall() {
@@ -171,8 +174,8 @@ public class Golfer : MonoBehaviour {
 
 		hole.AddStroke ();
 		
-		ball.renderer.material.color = Color.red;
-		ball.Hit();
+		//ball.renderer.material.color = Color.red;
+		ball.Hit(force, maxForce);
 
 	}
 }

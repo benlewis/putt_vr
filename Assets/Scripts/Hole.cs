@@ -6,7 +6,6 @@ public class Hole : MonoBehaviour {
 	public Transform startingSpot;
 	public Transform target;
 	public int par = 2;
-	public TextMesh scoreText;
 	
 	private int strokes = 0;
 
@@ -25,10 +24,5 @@ public class Hole : MonoBehaviour {
 	
 	public int GetStrokes() {
 		return strokes;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		//scoreText.text = "Par: " + par + "\nStrokes: " + strokes;
 	}
 }
