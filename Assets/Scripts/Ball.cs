@@ -73,7 +73,7 @@ public class Ball : MonoBehaviour {
 			surface.CompareTag ("Sand") ||
 			surface.CompareTag("Hole Walls")) {
 			restingInBounds += 1;	
-			Debug.Log("Inbounds on " + surface.tag + " RiB: " + restingInBounds);
+			//Debug.Log("Inbounds on " + surface.tag + " RiB: " + restingInBounds);
 		}
 
 		if (restingInBounds == 0) {
@@ -123,7 +123,7 @@ public class Ball : MonoBehaviour {
 		    surface.CompareTag("Hole Walls")) {
 		    //We have left the in bounds area
 			restingInBounds -= 1;	
-			Debug.Log("Leaving " + surface.tag + " RiB: " + restingInBounds);
+			//Debug.Log("Leaving " + surface.tag + " RiB: " + restingInBounds);
 		}
 	}
 }
