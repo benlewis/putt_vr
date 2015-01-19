@@ -10,7 +10,7 @@ public class Ball : MonoBehaviour {
 	public AudioClip waterSound;
 
 
-	private bool restingInBounds = true;
+	private int restingInBounds = 0;
 
 	private float maxOutOfBoundsSeconds = 3.0f;
 	private float outOfBoundsTime = 0.0f;
@@ -59,6 +59,10 @@ public class Ball : MonoBehaviour {
 		return resetShot;
 	}
 	
+	public bool StillInBounds() {
+		return !isOutOfBounds;
+	}
+	
 	// Keep track of what object our 
 	void OnCollisionEnter(Collision collisionInfo) {
 		Transform surface = collisionInfo.transform;
@@ -66,14 +70,18 @@ public class Ball : MonoBehaviour {
 		PlayCollisionClip(surface.tag);
 		
 		if (surface.CompareTag("Grass") ||
-			surface.CompareTag ("Sand")) {
-			restingInBounds = true;	
+			surface.CompareTag ("Sand") ||
+			surface.CompareTag("Hole Walls")) {
+			restingInBounds += 1;	
+			Debug.Log("Inbounds on " + surface.tag + " RiB: " + restingInBounds);
 		}
 
-		if (!restingInBounds) {
+		if (restingInBounds == 0) {
 			// We have hit a surface but we are not in bounds
 			outOfBoundsTime = maxOutOfBoundsSeconds;
 			isOutOfBounds = true;
+		} else {
+			isOutOfBounds = false;
 		}
 	}
 	
@@ -111,9 +119,11 @@ public class Ball : MonoBehaviour {
 		Transform surface = collisionInfo.transform;
 		
 		if (surface.CompareTag("Grass") ||
-		    surface.CompareTag ("Sand")) {
+		    surface.CompareTag ("Sand") ||
+		    surface.CompareTag("Hole Walls")) {
 		    //We have left the in bounds area
-			restingInBounds = false;	
+			restingInBounds -= 1;	
+			Debug.Log("Leaving " + surface.tag + " RiB: " + restingInBounds);
 		}
 	}
 }

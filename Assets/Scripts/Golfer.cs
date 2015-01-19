@@ -71,6 +71,7 @@ public class Golfer : MonoBehaviour {
 	void FixedUpdate () {
 		
 		if (!sleeping &&
+			ball.StillInBounds() && 
 		    Time.time - hitTime > minSleepTime &&
 		    ball.rigidbody.velocity.magnitude < sleepVelocity && 
 		    ball.rigidbody.angularVelocity.magnitude < sleepAngularVelocity) {
