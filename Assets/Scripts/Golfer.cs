@@ -23,7 +23,9 @@ public class Golfer : MonoBehaviour {
 	*/			
 	private float sleepVelocity = 0.5f;
 	private float sleepAngularVelocity = 3.5f;	
-	private float minSleepTime = 0.5f;	
+	private float minSleepTime = 0.5f;
+	private float minStationaryTime = 0.2f;
+	private float? stationaryTime;	
 	private float hitTime;
 	private bool sleeping = false;
 	
@@ -39,6 +41,8 @@ public class Golfer : MonoBehaviour {
 	private float force = 0.0f;
 	private float swingTime = 0.0f;
 	private bool inDownSwing = false;
+	private float maxSwingTime = 0.0f;
+	private bool waitForHitRelease = false;
 	
 	/*
 	 *	Interface with the Course Manager
@@ -53,6 +57,7 @@ public class Golfer : MonoBehaviour {
 	void Start () {
 		sleeping = false;
 		hitTime = Time.time;
+		stationaryTime = null;
 		if (moveableCamera) {
 			cameraPositionToGolfer = moveableCamera.transform.localPosition;
 		}
@@ -65,17 +70,28 @@ public class Golfer : MonoBehaviour {
 		ball = b;
 		sleeping = false;
 		hitTime = Time.time;
+		stationaryTime = null;
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		
+
 		if (!sleeping &&
 			ball.StillInBounds() && 
 		    Time.time - hitTime > minSleepTime &&
 		    ball.rigidbody.velocity.magnitude < sleepVelocity && 
 		    ball.rigidbody.angularVelocity.magnitude < sleepAngularVelocity) {
-			PutBallToSleep();
+		    
+		    // Debug.Log ("Checking stationaryTime: " + stationaryTime);
+		    if (stationaryTime == null)	   
+		    	stationaryTime = minStationaryTime;
+		    else
+		    	stationaryTime -= Time.deltaTime;
+		    
+		    if (stationaryTime <= 0.0f)	
+				PutBallToSleep();
+		} else {
+			stationaryTime = null;
 		}
 
 		// This is true when the ball is out of bounds or in a hazard
@@ -83,13 +99,16 @@ public class Golfer : MonoBehaviour {
 			hole.AddStroke(); // penalty stroke
 
 			PutBallToSleep();
-		}
+		}		
 
 		InputDevice device = InputManager.ActiveDevice;
 
-		if (sleeping && !inDownSwing && device.Action1.IsPressed) {
+		if (waitForHitRelease && !device.Action1.IsPressed)
+			waitForHitRelease = false;
+
+		if (sleeping && !inDownSwing && !waitForHitRelease && device.Action1.IsPressed) {
 			SwingUp();
-		} else if (swingTime > 0.0f) {
+		} else if (swingTime > 0.0f && !waitForHitRelease) {
 			SwingDown();
 		}
 	}
@@ -112,26 +131,31 @@ public class Golfer : MonoBehaviour {
 		// Move the golfer back to the ball
 		transform.position = ball.transform.position;
 
-		// Reset the club to a standing up angle
-		club.localEulerAngles = Vector3.zero;
+		// If this is the first stroke, face the starting direction
+		Debug.Log ("Strokes on " + hole.name + ": " + hole.GetStrokes ());
+		if (hole.GetStrokes() == 0) {
+			transform.eulerAngles = Vector3.up * hole.startingSpot.eulerAngles.y;
+			body.localEulerAngles = Vector3.zero;
+		}
+		if (false) { //always point towards the hole
+			//find the vector pointing from the ball position to the hole
+			Vector3 ballToHoleDirection = (holeTarget.position - ball.transform.position).normalized;
+			
+			//create the rotation we need to be in to look at the hole
+			Quaternion bodyLookRotation = Quaternion.LookRotation(ballToHoleDirection);
+			
+			// Rotate the golfer to face the hole
+			transform.rotation = bodyLookRotation;
+			transform.eulerAngles = Vector3.Scale (transform.eulerAngles, Vector3.up);
+			
+			// Reset the body to be straight forward
+			body.localEulerAngles = Vector3.zero;
+		}
 		
-		//find the vector pointing from the ball position to the hole
-		Vector3 ballToHoleDirection = (holeTarget.position - ball.transform.position).normalized;
-		
-		//create the rotation we need to be in to look at the hole
-		Quaternion bodyLookRotation = Quaternion.LookRotation(ballToHoleDirection);
-		
-		// Rotate the golfer to face the hole
-		transform.rotation = bodyLookRotation;
-		transform.eulerAngles = Vector3.Scale (transform.eulerAngles, Vector3.up);
-
 		// If this is a screen camera, put it back in the Head position looking forward
 		if (moveableCamera) {
 			moveableCamera.transform.localPosition = cameraPositionToGolfer;
 		}
-
-		// Reset the body to be straight forward
-		body.localEulerAngles = Vector3.zero;
 
 		// Reset the ball
 		ball.StartShot ();
@@ -140,9 +164,14 @@ public class Golfer : MonoBehaviour {
 	
 	public void SwingReady() {
 		// We are no longer swinging
+		
+		// Reset the club to a standing up angle
+		club.localEulerAngles = Vector3.zero;
 		force = 0.0f;
 		swingTime = 0.0f;
 		inDownSwing = false;
+		maxSwingTime = 0.0f;
+		waitForHitRelease = false;
 	}
 	
 	public void SwingUp() {
@@ -150,6 +179,12 @@ public class Golfer : MonoBehaviour {
 			swingTime += Time.deltaTime;
 			club.localEulerAngles += Vector3.right * 40.0f * Time.deltaTime;
 			force += 200.0f * Time.deltaTime;
+		} else {
+			maxSwingTime += Time.deltaTime;
+			if (maxSwingTime > 1.0f) {
+				SwingReady ();
+				waitForHitRelease = true;
+			}
 		}
 	}
 	
@@ -183,7 +218,6 @@ public class Golfer : MonoBehaviour {
 		hole.AddStroke ();
 		
 		//ball.renderer.material.color = Color.red;
-		ball.Hit(force, maxForce);
-
+		ball.Hit(force, maxForce);		
 	}
 }

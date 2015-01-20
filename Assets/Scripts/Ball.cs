@@ -105,7 +105,8 @@ public class Ball : MonoBehaviour {
 		}
 		
 		if (hitClip) {
-			audio.PlayOneShot(hitClip);
+			Debug.Log ("Playing sound with speed: " + rigidbody.velocity.sqrMagnitude);
+			audio.PlayOneShot(hitClip, Mathf.Min(rigidbody.velocity.sqrMagnitude / 10.0f, 1.0f));
 		}
 	}
 	
