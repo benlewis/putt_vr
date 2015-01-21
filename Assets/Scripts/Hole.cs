@@ -15,6 +15,7 @@ public class Hole : MonoBehaviour {
 	}
 	
 	public void AddStroke() {
+		Debug.Log ("Adding a stroke to " + name);
 		strokes += 1;
 	}
 

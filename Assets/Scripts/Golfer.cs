@@ -200,7 +200,7 @@ public class Golfer : MonoBehaviour {
 		swingTime -= Time.deltaTime;
 		club.localEulerAngles -= Vector3.right * swingDownDegreesPerSecond * Time.deltaTime;
 		if (swingTime <= 0.0f) {
-			if (force > 35.0f) 
+			if (force > 15.0f) 
 				HitBall();
 			else
 				SwingReady(); // Skip the stroke, it wasn't enough of a swing
