@@ -97,16 +97,18 @@ public class Ball : MonoBehaviour {
 	private void PlayCollisionClip(string tag) {
 		AudioClip hitClip = null;
 		
+		float volumeMin = 0.3f;
+		
 		switch (tag) {
 			case "Walls": hitClip = wallSound; break;
 			case "Sand": hitClip = sandSound; break;
 			case "Hole": hitClip = holeWallSound; break;
-			case "Water": hitClip = waterSound; break;
+			case "Water": hitClip = waterSound; volumeMin = 1.0f; break;
 		}
 		
 		if (hitClip) {
 			Debug.Log ("Playing sound with speed: " + rigidbody.velocity.sqrMagnitude);
-			audio.PlayOneShot(hitClip, Mathf.Min(rigidbody.velocity.sqrMagnitude / 10.0f, 1.0f));
+			audio.PlayOneShot(hitClip, Mathf.Min(Mathf.Max(volumeMin, rigidbody.velocity.sqrMagnitude / 10.0f), 1.0f));
 		}
 	}
 	
