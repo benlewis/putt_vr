@@ -68,9 +68,21 @@ public class KeyMapping : UnityInputDeviceProfile
 			},
 			new InputControlMapping
 			{
-				Handle = "Reset View",
+				Handle = "Turn Right",
+				Target = InputControlType.RightBumper,
+				Source = KeyCodeButton ( KeyCode.C )
+			},
+			new InputControlMapping
+			{
+				Handle = "Turn Left",
+				Target = InputControlType.LeftBumper,
+				Source = KeyCodeButton ( KeyCode.Z )
+			},
+			new InputControlMapping
+			{
+				Handle = "Face Target",
 				Target = InputControlType.Action4,
-				Source = KeyCodeButton( KeyCode.R )
+				Source = MouseButton1
 			},
 			new InputControlMapping
 			{

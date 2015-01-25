@@ -62,6 +62,7 @@ public class Golfer : MonoBehaviour {
 			cameraPositionToGolfer = moveableCamera.transform.localPosition;
 		}
 		manager = FindObjectOfType<CourseManager>();
+		Screen.lockCursor = true;
 	}
 	
 	public void SetHole(Hole h, Ball b) {
@@ -72,8 +73,7 @@ public class Golfer : MonoBehaviour {
 		hitTime = Time.time;
 		stationaryTime = null;
 	}
-	
-	// Update is called once per frame
+
 	void FixedUpdate () {
 
 		if (!sleeping &&
@@ -100,16 +100,24 @@ public class Golfer : MonoBehaviour {
 
 			PutBallToSleep();
 		}		
-
+	}
+	
+	void Update() {
 		InputDevice device = InputManager.ActiveDevice;
-
+		
 		if (waitForHitRelease && !device.Action1.IsPressed)
 			waitForHitRelease = false;
-
+		
 		if (sleeping && !inDownSwing && !waitForHitRelease && device.Action1.IsPressed) {
 			SwingUp();
 		} else if (swingTime > 0.0f && !waitForHitRelease) {
 			SwingDown();
+		}
+		
+		if (device.RightBumper.WasPressed) {
+			transform.Rotate(0.0f,45.0f,0.0f, Space.World);
+		} else if (device.LeftBumper.WasPressed) {
+			transform.Rotate(0.0f,-45.0f,0.0f, Space.World);
 		}
 	}
 	

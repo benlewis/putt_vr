@@ -6,6 +6,7 @@ public class RotateInputController : MonoBehaviour {
 
 	public float degreesPerSecond = 90.0f;
 	public Transform hmd;
+	public Transform monitor;
 	
 	private float lastY;
 
@@ -26,7 +27,25 @@ public class RotateInputController : MonoBehaviour {
 //												
 //			return;
 //		}
+
 		InputDevice device = InputManager.ActiveDevice;
+		
+		if (device.Action4) {
+			// Rotate club to face the direction of the camera
+			Transform t = hmd;
+			if (t == null || !t.gameObject.activeInHierarchy)
+				t = monitor;
+			if (t) {
+				Debug.Log ("Rotating club to face the direction of " + t.gameObject.name);
+				float y = t.localEulerAngles.y;
+				transform.localEulerAngles = new Vector3(
+					transform.localEulerAngles.x, 
+					y, 
+					transform.localEulerAngles.z
+				);			
+			}			
+		}
+		
 		float rotation = device.RightTrigger - device.LeftTrigger;
 		transform.localEulerAngles -= Vector3.up * 
 			rotation * 
