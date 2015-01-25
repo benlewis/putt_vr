@@ -19,6 +19,8 @@ public class Ball : MonoBehaviour {
 	private Vector3 shotPosition;
 	private Vector3? warpPosition = null;
 	
+	private Hole hole;
+	
 	// Use this for initialization
 	void Start () {
 
@@ -50,6 +52,12 @@ public class Ball : MonoBehaviour {
 		isOutOfBounds = false;
 		shotPosition = transform.position;
 		warpPosition = null;
+		restingInBounds = 1;
+	}
+	
+	public void StartHole(Hole h) {
+		hole = h;
+		transform.position = hole.startingSpot.position;
 	}
 
 	public bool ResetShot() {
@@ -75,6 +83,10 @@ public class Ball : MonoBehaviour {
 			restingInBounds += 1;	
 			//Debug.Log("Inbounds on " + surface.tag + " RiB: " + restingInBounds);
 		}
+		
+		// We are officially on another hole
+		if (hole != surface.GetComponentInParent<Hole>())
+			restingInBounds = 0;
 
 		if (restingInBounds == 0) {
 			// We have hit a surface but we are not in bounds
@@ -102,7 +114,7 @@ public class Ball : MonoBehaviour {
 		switch (tag) {
 			case "Walls": hitClip = wallSound; break;
 			case "Sand": hitClip = sandSound; break;
-			case "Hole": hitClip = holeWallSound; break;
+			case "Hole": hitClip = holeWallSound; volumeMin = 1.0f; break;
 			case "Water": hitClip = waterSound; volumeMin = 1.0f; break;
 		}
 		
@@ -124,6 +136,7 @@ public class Ball : MonoBehaviour {
 		if (surface.CompareTag("Grass") ||
 		    surface.CompareTag ("Sand") ||
 		    surface.CompareTag("Hole Walls")) {
+		    
 		    //We have left the in bounds area
 			restingInBounds -= 1;	
 			//Debug.Log("Leaving " + surface.tag + " RiB: " + restingInBounds);
