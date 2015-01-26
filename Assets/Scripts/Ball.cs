@@ -18,12 +18,13 @@ public class Ball : MonoBehaviour {
 	private bool resetShot = false;
 	private Vector3 shotPosition;
 	private Vector3? warpPosition = null;
+	private float naturalDrag;
 	
 	private Hole hole;
 	
 	// Use this for initialization
 	void Start () {
-
+		naturalDrag = rigidbody.angularDrag;
 	}
 	
 	public void SetWarpPosition(Vector3 pos) {
@@ -79,8 +80,13 @@ public class Ball : MonoBehaviour {
 		Debug.Log ("Collided with " + surface.name);
 		PlayCollisionClip(surface.tag);
 		
+		// Need to not stop in the chute
+		if (surface.CompareTag ("Chute"))
+			rigidbody.angularDrag = 0.0f;
+		
 		if (surface.CompareTag("Grass") ||
 			surface.CompareTag ("Sand") ||
+			surface.CompareTag("Chute") ||
 			surface.CompareTag("Hole Walls")) {
 			restingInBounds += 1;	
 			//Debug.Log("Inbounds on " + surface.tag + " RiB: " + restingInBounds);
@@ -136,8 +142,12 @@ public class Ball : MonoBehaviour {
 	void OnCollisionExit(Collision collisionInfo) {
 		Transform surface = collisionInfo.transform;
 		
+		if (surface.CompareTag ("Chute"))
+			rigidbody.angularDrag = naturalDrag;
+		
 		if (surface.CompareTag("Grass") ||
 		    surface.CompareTag ("Sand") ||
+		    surface.CompareTag ("Chute") ||
 		    surface.CompareTag("Hole Walls")) {
 		    
 		    //We have left the in bounds area

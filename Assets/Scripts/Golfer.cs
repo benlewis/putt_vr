@@ -23,7 +23,7 @@ public class Golfer : MonoBehaviour {
 	*/			
 	private float sleepVelocity = 0.5f;
 	private float sleepAngularVelocity = 3.5f;	
-	private float minSleepTime = 0.5f;
+	private float minSleepTime = 1.5f;
 	private float minStationaryTime = 0.2f;
 	private float? stationaryTime;	
 	private float hitTime;
