@@ -19,12 +19,31 @@ public class Ball : MonoBehaviour {
 	private Vector3 shotPosition;
 	private Vector3? warpPosition = null;
 	private float naturalDrag;
+	private float naturalColliderSize;
+	private SphereCollider sphereCollider;
 	
 	private Hole hole;
 	
 	// Use this for initialization
 	void Start () {
+		PreservePhysics();
+	}
+	
+	private void PreservePhysics() {
 		naturalDrag = rigidbody.angularDrag;
+		sphereCollider = collider.GetComponent<SphereCollider>();
+		naturalColliderSize = sphereCollider.radius;
+	}
+	
+	private void SpeedPhysics() {
+		rigidbody.angularDrag = 0.0f;
+		sphereCollider.radius = 30.0f;
+		
+	}
+	
+	private void NormalPhysics() {
+		rigidbody.angularDrag = naturalDrag;
+		sphereCollider.radius = naturalColliderSize;
 	}
 	
 	public void SetWarpPosition(Vector3 pos) {
@@ -82,7 +101,7 @@ public class Ball : MonoBehaviour {
 		
 		// Need to not stop in the chute
 		if (surface.CompareTag ("Chute"))
-			rigidbody.angularDrag = 0.0f;
+			SpeedPhysics();
 		
 		if (surface.CompareTag("Grass") ||
 			surface.CompareTag ("Sand") ||
@@ -143,7 +162,7 @@ public class Ball : MonoBehaviour {
 		Transform surface = collisionInfo.transform;
 		
 		if (surface.CompareTag ("Chute"))
-			rigidbody.angularDrag = naturalDrag;
+			NormalPhysics();
 		
 		if (surface.CompareTag("Grass") ||
 		    surface.CompareTag ("Sand") ||
