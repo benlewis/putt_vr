@@ -6,9 +6,10 @@ public class RotateInputController : MonoBehaviour {
 
 	public float degreesPerSecond = 90.0f;
 	public Transform hmd;
-	public Transform monitor;
+	public MoveCamera monitor;
 	
 	private float lastY;
+	private Golfer golfer;
 
 	// Use this for initialization
 	void Start () {
@@ -31,10 +32,18 @@ public class RotateInputController : MonoBehaviour {
 		InputDevice device = InputManager.ActiveDevice;
 		
 		if (device.Action4) {
+			if (hmd && hmd.gameObject.activeInHierarchy)
+				OVRManager.capiHmd.RecenterPose();
+			
+			if (monitor && monitor.gameObject.activeInHierarchy)
+				monitor.ResetPosition();
+		}
+			
+		if (device.Action3) {
 			// Rotate club to face the direction of the camera
 			Transform t = hmd;
 			if (t == null || !t.gameObject.activeInHierarchy)
-				t = monitor;
+				t = monitor.transform;
 			if (t) {
 				Debug.Log ("Rotating club to face the direction of " + t.gameObject.name);
 				float y = t.localEulerAngles.y;

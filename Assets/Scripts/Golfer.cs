@@ -10,7 +10,7 @@ public class Golfer : MonoBehaviour {
 	*/
 	public Transform club;
 	public Transform body;
-	public Camera moveableCamera;
+	public MoveCamera moveableCamera;
 	
 	/*
 	 * 	Determines how far back we swing
@@ -29,10 +29,7 @@ public class Golfer : MonoBehaviour {
 	private float hitTime;
 	private bool sleeping = false;
 	
-	/* 
-	 * 	After the ball sleeps we need to move the camera back
-	*/
-	private Vector3 cameraPositionToGolfer;
+
 
 	/*
 	 * 	How long is the swing in motion
@@ -58,9 +55,6 @@ public class Golfer : MonoBehaviour {
 		sleeping = false;
 		hitTime = Time.time;
 		stationaryTime = null;
-		if (moveableCamera) {
-			cameraPositionToGolfer = moveableCamera.transform.localPosition;
-		}
 		manager = FindObjectOfType<CourseManager>();
 		Screen.lockCursor = true;
 	}
@@ -130,6 +124,20 @@ public class Golfer : MonoBehaviour {
 			manager.PlayNextHole();
 			return;
 		}
+		
+		foreach (Collider c in hole.unoccupiedZones) {
+			Debug.Log ("Checking bounds of " + c.name);
+			if (c.bounds.Contains (ball.transform.position)) {
+				Debug.Log ("Moving ball back");
+				Collider landingSpot = c.GetComponentsInChildren<Collider>()[1];
+				Debug.Log ("Moving to landing spot " + landingSpot.name);
+				ball.transform.position = new Vector3(
+					ball.transform.position.x,
+					ball.transform.position.y,
+					landingSpot.transform.position.z
+				);
+			}
+		}
 			
 		SetForSwing();
 	}
@@ -140,7 +148,6 @@ public class Golfer : MonoBehaviour {
 		transform.position = ball.transform.position;
 
 		// If this is the first stroke, face the starting direction
-		Debug.Log ("Strokes on " + hole.name + ": " + hole.GetStrokes ());
 		if (hole.GetStrokes() == 0) {
 			transform.eulerAngles = Vector3.up * hole.startingSpot.eulerAngles.y;
 			body.localEulerAngles = Vector3.zero;
@@ -162,7 +169,7 @@ public class Golfer : MonoBehaviour {
 		
 		// If this is a screen camera, put it back in the Head position looking forward
 		if (moveableCamera) {
-			moveableCamera.transform.localPosition = cameraPositionToGolfer;
+			moveableCamera.ResetPosition();
 		}
 
 		// Reset the ball

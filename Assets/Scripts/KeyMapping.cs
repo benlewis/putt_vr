@@ -81,8 +81,14 @@ public class KeyMapping : UnityInputDeviceProfile
 			new InputControlMapping
 			{
 				Handle = "Face Target",
-				Target = InputControlType.Action4,
+				Target = InputControlType.Action3,
 				Source = MouseButton1
+			},
+			new InputControlMapping
+			{
+				Handle = "Reset Screen",
+				Target = InputControlType.Action4,
+				Source = KeyCodeButton ( KeyCode.R )
 			},
 			new InputControlMapping
 			{

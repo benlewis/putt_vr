@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Hole : MonoBehaviour {
 
@@ -8,6 +9,8 @@ public class Hole : MonoBehaviour {
 	public int par = 2;
 	
 	private int strokes = 0;
+	
+	public List<Collider> unoccupiedZones;
 
 	// Use this for initialization
 	void Start () {
@@ -15,7 +18,6 @@ public class Hole : MonoBehaviour {
 	}
 	
 	public void AddStroke() {
-		Debug.Log ("Adding a stroke to " + name);
 		strokes += 1;
 	}
 

@@ -12,7 +12,7 @@ public class Ball : MonoBehaviour {
 
 	private int restingInBounds = 0;
 
-	private float maxOutOfBoundsSeconds = 3.0f;
+	private float maxOutOfBoundsSeconds = 1.0f;
 	private float outOfBoundsTime = 0.0f;
 	private bool isOutOfBounds = false;
 	private bool resetShot = false;
@@ -53,6 +53,7 @@ public class Ball : MonoBehaviour {
 		shotPosition = transform.position;
 		warpPosition = null;
 		restingInBounds = 1;
+		collider.enabled = false;
 	}
 	
 	public void StartHole(Hole h) {
@@ -75,6 +76,7 @@ public class Ball : MonoBehaviour {
 	void OnCollisionEnter(Collision collisionInfo) {
 		Transform surface = collisionInfo.transform;
 		
+		Debug.Log ("Collided with " + surface.name);
 		PlayCollisionClip(surface.tag);
 		
 		if (surface.CompareTag("Grass") ||
@@ -125,6 +127,7 @@ public class Ball : MonoBehaviour {
 	}
 	
 	public void Hit(float force, float max_force) {
+		collider.enabled = true;
 		if (clubSound) {
 			audio.PlayOneShot(clubSound, force / max_force);
 		}

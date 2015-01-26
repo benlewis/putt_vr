@@ -14,11 +14,24 @@ public class MoveCamera : MonoBehaviour {
 
 	private float rotationY = 0.0f;
 
+	/* 
+	 * 	After the ball sleeps we need to move the camera back
+	*/
+	private Vector3 cameraPositionToGolfer;
+	private Vector3 cameraLocalEulerAngles;
+	
 	// Use this for initialization
 	void Start () {
 		Screen.lockCursor = true;
+		cameraPositionToGolfer = transform.localPosition;
+		cameraLocalEulerAngles = transform.localEulerAngles;
 	}
 	
+	public void ResetPosition() {
+		transform.localPosition = cameraPositionToGolfer;
+		ResetOrientation();
+	}	
+
 	// Update is called once per frame
 	void Update () {
 		InputDevice device = InputManager.ActiveDevice;
@@ -45,6 +58,6 @@ public class MoveCamera : MonoBehaviour {
 	}
 
 	public void ResetOrientation() {
-		rotationY = 0;
+		rotationY = -180.0f;
 	}
 }
