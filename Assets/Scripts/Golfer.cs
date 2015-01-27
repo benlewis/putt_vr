@@ -109,9 +109,9 @@ public class Golfer : MonoBehaviour {
 		}
 		
 		if (device.RightBumper.WasPressed) {
-			transform.Rotate(0.0f,45.0f,0.0f, Space.World);
+			transform.Rotate(0.0f,180.0f,0.0f, Space.World);
 		} else if (device.LeftBumper.WasPressed) {
-			transform.Rotate(0.0f,-45.0f,0.0f, Space.World);
+			transform.Rotate(0.0f,-180.0f,0.0f, Space.World);
 		}
 	}
 	

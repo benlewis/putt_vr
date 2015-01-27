@@ -9,10 +9,7 @@ public class Ball : MonoBehaviour {
 	public AudioClip sandSound;
 	public AudioClip waterSound;
 
-
-	private int restingInBounds = 0;
-
-	private float maxOutOfBoundsSeconds = 1.0f;
+	private float maxOutOfBoundsSeconds = 0.2f;
 	private float outOfBoundsTime = 0.0f;
 	private bool isOutOfBounds = false;
 	private bool resetShot = false;
@@ -72,7 +69,6 @@ public class Ball : MonoBehaviour {
 		isOutOfBounds = false;
 		shotPosition = transform.position;
 		warpPosition = null;
-		restingInBounds = 1;
 		collider.enabled = false;
 	}
 	
@@ -103,25 +99,11 @@ public class Ball : MonoBehaviour {
 		if (surface.CompareTag ("Chute"))
 			SpeedPhysics();
 		
-		if (surface.CompareTag("Grass") ||
-			surface.CompareTag ("Sand") ||
-			surface.CompareTag("Chute") ||
-			surface.CompareTag("Hole Walls")) {
-			restingInBounds += 1;	
-			//Debug.Log("Inbounds on " + surface.tag + " RiB: " + restingInBounds);
-		}
-		
-		// We are officially on another hole
+		// We are officially on another hole or a non-hole
 		if (hole != surface.GetComponentInParent<Hole>())
-			restingInBounds = 0;
-
-		if (restingInBounds == 0) {
-			// We have hit a surface but we are not in bounds
-			outOfBoundsTime = maxOutOfBoundsSeconds;
 			isOutOfBounds = true;
-		} else {
+		else 
 			isOutOfBounds = false;
-		}
 	}
 	
 	public void OnTriggerEnter(Collider collider) {
@@ -163,15 +145,5 @@ public class Ball : MonoBehaviour {
 		
 		if (surface.CompareTag ("Chute"))
 			NormalPhysics();
-		
-		if (surface.CompareTag("Grass") ||
-		    surface.CompareTag ("Sand") ||
-		    surface.CompareTag ("Chute") ||
-		    surface.CompareTag("Hole Walls")) {
-		    
-		    //We have left the in bounds area
-			restingInBounds -= 1;	
-			//Debug.Log("Leaving " + surface.tag + " RiB: " + restingInBounds);
-		}
 	}
 }
