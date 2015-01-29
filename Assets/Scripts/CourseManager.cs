@@ -45,18 +45,29 @@ public class CourseManager : MonoBehaviour {
 			"",
 			"Strokes"
 		};
+		
+		int total_par = 0;
+		int total_strokes = 0;
 //		lines[0] 	= "        ";
 //		lines[1] 	= "Par     ";
 //		lines[2] 	= "Strokes ";
 		for (int i = starting_hole; i < starting_hole + num_holes; i++) {
 			int h = i + 1;
 			lines[0] += AddInt(h, false);
+			total_par += holes[i].par;
+			total_strokes += holes[i].GetStrokes();
 			if (holes[i]) {
 				lines[2] += AddInt(holes[i].par);
-				if (currentHole > i)
+				if (currentHole > i) {
 					lines[4] += AddInt(holes[i].GetStrokes ());
+				}
 			}
 		}
+		
+		lines[0] += " Tot";
+		lines[2] += AddInt (total_par, false);
+		lines[4] += AddInt (total_strokes, false);
+		
 		for (int i = 0; i < lines[0].Length; i++) {
 			lines[1] += "-";
 			lines[3] += "-";
