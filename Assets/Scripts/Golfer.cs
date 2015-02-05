@@ -97,6 +97,11 @@ public class Golfer : MonoBehaviour {
 	}
 	
 	void Update() {
+		if (club.gameObject.activeSelf && !sleeping && Time.time - hitTime > minSleepTime) {
+			// hide the club
+			club.gameObject.SetActive(false);
+		}
+		   
 		InputDevice device = InputManager.ActiveDevice;
 		
 		if (waitForHitRelease && !device.Action1.IsPressed)
@@ -113,6 +118,14 @@ public class Golfer : MonoBehaviour {
 		} else if (device.LeftBumper.WasPressed) {
 			transform.Rotate(0.0f,-180.0f,0.0f, Space.World);
 		}
+		
+		if (!sleeping &&
+		    Time.time - hitTime > minSleepTime &&
+		    device.Action1.WasPressed) {
+		    
+		    // They want to follow the ball
+		    transform.position = ball.transform.position;
+		}
 	}
 	
 	public void PutBallToSleep() {
@@ -121,7 +134,7 @@ public class Golfer : MonoBehaviour {
 		
 		if (holeTarget.collider.bounds.Contains(ball.transform.position)) {
 			Debug.Log ("Ball is inside hole. On to next hole");
-			manager.PlayNextHole();
+			manager.FinishHole();		
 			return;
 		}
 		
@@ -171,7 +184,10 @@ public class Golfer : MonoBehaviour {
 		if (moveableCamera) {
 			moveableCamera.ResetPosition();
 		}
-
+		
+		// Show the club again
+		club.gameObject.SetActive(true);
+		
 		// Reset the ball
 		ball.StartShot ();
 		SwingReady();

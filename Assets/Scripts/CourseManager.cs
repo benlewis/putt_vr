@@ -7,34 +7,92 @@ public class CourseManager : MonoBehaviour {
 	public Golfer golfer;
 	public Ball ball;
 	public List<Hole> holes;
-	public int currentHole = 0;
+	public int currentHoleIndex = 0;
+	public AudioClip soundHoleInOne;
+	public AudioClip soundBirdie;
+	public AudioClip soundPar;
+	public AudioClip soundBogie;
+	public AudioClip soundEagle;
+	public AudioClip soundDoubleBogie;
+	public AudioClip soundTripleBogie;
+	public AudioClip soundQuadrupleBogie;
+	public AudioClip soundAlbatross;
 	
+	private Hole currentHole = null;
 
 	// Use this for initialization
 	void Start () {		
 		PlayNextHole();
 	}
 	
+	public void FinishHole() {
+		AudioClip clip = null;
+
+		if (currentHole.GetStrokes() == 1)
+			clip = soundHoleInOne;
+		else  {
+			int difference = currentHole.GetStrokes() - currentHole.par;
+			if (difference >= 4)
+				clip = soundQuadrupleBogie;
+			else if (difference <= -3)
+				clip = soundAlbatross;
+			else switch(difference) {
+				case 3: clip = soundTripleBogie; break;
+				case 2: clip = soundDoubleBogie; break;
+				case 1: clip = soundBogie; break;
+				case 0: clip = soundPar; break;
+				case -1: clip = soundBirdie; break;
+				case -2: clip = soundEagle; break;
+			}
+		}
+
+		
+		if (clip)	
+			golfer.audio.PlayOneShot(clip);
+		
+		PlayNextHole();
+		
+	}
+	
 	public void PlayNextHole() {
-		if (currentHole >= holes.Count) {
+		
+		if (currentHole != null)
+			currentHoleIndex += 1;
+		
+		if (currentHoleIndex >= holes.Count) {
 			// Quit
 			Debug.Log ("Game over!");
-			// return;
-			currentHole = 0; // restart the course
+			
+			// TODO: Show an end game dialog of sorts
+			currentHoleIndex = 0; // restart the course
+			
 		}
 		
-		Hole hole = holes[currentHole];
-		hole.StartHole ();
-		ball.StartHole(hole);
-		golfer.SetHole(hole, ball);
+		currentHole = holes[currentHoleIndex];
+		
+		currentHole.StartHole ();
+		ball.StartHole(currentHole);
+		golfer.SetHole(currentHole, ball);
 		ball.gameObject.SetActive(true);
 		ball.rigidbody.WakeUp();
-		//golfer.SetForSwing();
-		
-		currentHole += 1;
+		golfer.PutBallToSleep();
 	}
 	
 	public readonly string[] holeNames = {"1","2","3","4","5","6","7","8","9"};
+	
+	public string GetControlText() {
+		string[] lines = {
+			"Swing: (A)",
+			"Reset Shot: Hold (A)",
+			"Follow Ball (Mid Shot): (A)",
+			"Rotate Club: (LT), (RT)",
+			"Turn Around (180): (LB), (RB)",
+			"Reset View: (Y)",
+			"Aim Look: Hold (X)"
+		};
+	
+		return string.Join("\n", lines);
+	}
 	
 	public string GetScoreText(int starting_hole, int num_holes) {
 		
@@ -43,7 +101,9 @@ public class CourseManager : MonoBehaviour {
 			"",
 			"Par    ",
 			"",
-			"Strokes"
+			"Strokes",
+			"",
+			""
 		};
 		
 		int total_par = 0;
@@ -54,27 +114,33 @@ public class CourseManager : MonoBehaviour {
 		for (int i = starting_hole; i < starting_hole + num_holes; i++) {
 			int h = i + 1;
 			lines[0] += AddInt(h, false);
-			total_par += holes[i].par;
-			total_strokes += holes[i].GetStrokes();
 			if (holes[i]) {
 				lines[2] += AddInt(holes[i].par);
-				if (currentHole > i) {
+				if (currentHoleIndex >= i) {
 					lines[4] += AddInt(holes[i].GetStrokes ());
+					if (currentHoleIndex >= i + 1) {
+						total_strokes += holes[i].GetStrokes();
+						total_par += holes[i].par;
+					}
 				}
+				
 			}
 		}
 		
-		lines[0] += " Tot";
-		lines[2] += AddInt (total_par, false);
-		lines[4] += AddInt (total_strokes, false);
+		int overall_par = 0;
+		int overall_strokes = 0;
+		for (int i = 0; i < currentHoleIndex; i++) {
+			overall_par += holes[i].par;
+			overall_strokes += holes[i].GetStrokes();
+		}
 		
 		for (int i = 0; i < lines[0].Length; i++) {
 			lines[1] += "-";
 			lines[3] += "-";
 		}
-		
-		//string top_line = 		"   " + string.Join(".. ", holeNames);
-		//string pars  = 		"Par holes.GetRange(0,9).ConvertAll(hole => hole.name).ToArray()
+	
+		lines[6] = string.Format ("{0} Nine: {1} / {2}", (starting_hole == 0) ? "Front" : "Back", total_strokes, total_par);
+		lines[6] += string.Format ("   Overall: {0} / {1}", overall_strokes, overall_par);
 		
 		return string.Join("\n", lines);
 	}

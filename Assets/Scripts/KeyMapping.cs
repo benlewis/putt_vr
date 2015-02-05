@@ -42,6 +42,11 @@ public class KeyMapping : UnityInputDeviceProfile
 				// KeyCodeButton fires when any of the provided KeyCode params are down.
 				Source = KeyCodeButton( KeyCode.Space, KeyCode.Return )
 			},
+			new InputControlMapping {
+				Handle = "Text Toggle",
+				Target = InputControlType.Start,
+				Source = KeyCodeButton( KeyCode.F )
+			},
 			new InputControlMapping
 			{
 				Handle = "Fly Up",
