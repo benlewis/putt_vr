@@ -11,6 +11,7 @@ public class Golfer : MonoBehaviour {
 	public Transform club;
 	public Transform body;
 	public MoveCamera moveableCamera;
+	public AudioClip soundBadShot;
 	
 	/*
 	 * 	Determines how far back we swing
@@ -28,7 +29,8 @@ public class Golfer : MonoBehaviour {
 	private float? stationaryTime;	
 	private float hitTime;
 	private bool sleeping = false;
-	
+	private float delayAudioTime = 0.0f;
+	private AudioClip delayAudioClip;
 
 
 	/*
@@ -91,12 +93,23 @@ public class Golfer : MonoBehaviour {
 		// This is true when the ball is out of bounds or in a hazard
 		if (ball.ResetShot ()) {
 			hole.AddStroke(); // penalty stroke
+			if (soundBadShot) {
+				delayAudioTime = 0.2f; 
+				delayAudioClip = soundBadShot;
+			}
 
 			PutBallToSleep();
 		}		
 	}
 	
 	void Update() {
+		if (delayAudioTime > 0.0f) {
+			delayAudioTime -= Time.deltaTime;
+			if (delayAudioTime <= 0.0f) 
+				audio.PlayOneShot(delayAudioClip);
+		}
+		
+	
 		if (club.gameObject.activeSelf && !sleeping && Time.time - hitTime > minSleepTime) {
 			// hide the club
 			club.gameObject.SetActive(false);

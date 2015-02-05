@@ -17,6 +17,7 @@ public class CourseManager : MonoBehaviour {
 	public AudioClip soundTripleBogie;
 	public AudioClip soundQuadrupleBogie;
 	public AudioClip soundAlbatross;
+
 	
 	private Hole currentHole = null;
 
