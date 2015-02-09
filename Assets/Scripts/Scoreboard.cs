@@ -7,6 +7,7 @@ public class Scoreboard : MonoBehaviour {
 	public CourseManager courseManager;
 	public int starting_hole = 0;
 	public TextMesh controlText;
+	public bool gameOverMode = false;
 
 	private TextMesh textMesh;
 	
@@ -17,7 +18,6 @@ public class Scoreboard : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
 		InputDevice device = InputManager.ActiveDevice;
 		if (device.GetControl(InputControlType.Start).IsPressed) {
 			textMesh.text = courseManager.GetControlText();

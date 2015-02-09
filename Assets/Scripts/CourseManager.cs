@@ -6,6 +6,7 @@ public class CourseManager : MonoBehaviour {
 
 	public Golfer golfer;
 	public Ball ball;
+	public GameObject finalScoreBoard;
 	public List<Hole> holes;
 	public int currentHoleIndex = 0;
 	public AudioClip soundHoleInOne;
@@ -64,9 +65,10 @@ public class CourseManager : MonoBehaviour {
 			// Quit
 			Debug.Log ("Game over!");
 			
-			// TODO: Show an end game dialog of sorts
-			currentHoleIndex = 0; // restart the course
-			
+			//finalScoreBoard.transform.position = Camera.main.transform + Camera.main.transform.forward * 5.0f;
+			//finalScoreBoard.SetActive(true);
+			//return;			
+			currentHoleIndex = 0;
 		}
 		
 		currentHole = holes[currentHoleIndex];
@@ -149,9 +151,5 @@ public class CourseManager : MonoBehaviour {
 	private string AddInt(int h, bool pipe = true) {
 		return string.Format(" {0}{1}{2}", h, h >= 10 ? "" : " ", pipe ? "|" : " ");
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
 }
